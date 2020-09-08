@@ -1,0 +1,8 @@
+allKeyframes:
+-------------
+saves the file names without the image-type extension for last two digits (as encoded by active vision dataset)
+example: trainKeyframes = {'0001100000301', '0001100014701', '0001100029101'};
+original rgb files are names as follows: {'000110000030101.jpg', '000110001470101.jpg', '000110002910101.jpg'};
+
+
+
