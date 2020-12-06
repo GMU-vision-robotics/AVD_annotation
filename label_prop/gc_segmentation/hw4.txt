@@ -1,0 +1,36 @@
+Foreground Background Segmentation using Graph Cuts (due in 2 weeks)
+--------------------------------------------
+
+The goal of this homework is for you to get familiar 
+with the GraphCut algorithm used for optimal labelling. 
+
+You will be asked to implement the foreground/background 
+subtraction algorithm and run it on all images in the image 
+directory. 
+
+This is a two label problem which can be solved optimally with GraphCuts. 
+
+1. You can assume that the problem is formulated on a pixel grid with 4
+or 8 connected neighbours.  
+
+2. You will need to implement the computation of the data term assuming 
+that the label likelihood is computed  as -log(p(pixel/foreground)/p(pixel|bakground)).
+You can decide on the choice of distribution for represing the likelihood distributions
+(e.g. histograms, of Gaussian Mixeture are some options)
+
+3. To construct the unary term you can initialize the foreground region you will use for 
+estimation of the likelihood  by hand by clicking at two corners of a rectangle containing the object (use function ginput). 
+
+4. Hand in the mathematical expression of the energy function. 
+
+5. Visualize the foreground/backgroup likelihood map
+
+6. Show the results if final segmentation on all images in {\tt image} directory with the 
+i) data independent pairwise term and 
+ii) contrast sensitive pairwise term. 
+
+The required code to get started can be found in cs884/gc_segmentation/.
+To see how to use the GraphCuts you can look at the example 
+gc_example.m for color based segmentation on an image. 
+
+

@@ -1,0 +1,15 @@
+Execute:
+Run the segment_fb script to segment the image into background and foreground.
+
+
+The scripts asks two from user two inputs. The foreground region is selected
+from the original image. A mixture of Gaussian model is fitted on the rgb pixels
+values in the selected foreground region. This model gives us the likelihood
+distribution of a pixel belonging to the foreground. Another mixture of Gaussian is
+fitted on the selected background region to model the likelihood distribution of
+a pixel belonging to the background. The likelihood maps are shown in the report.pdf
+for each of the input images. For the graph cut algorithm, we take the negative
+log likelihood of the each map. This assumes that the data term in the energy function
+is modeled as negative log likelihood ratio of the foreground and the background for
+each pixel. The foreground segment boundary overlaid on the image when we take
+constant pairwise term.

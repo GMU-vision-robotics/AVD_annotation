@@ -1,0 +1,59 @@
+Image Annotation:
+=================
+- source code for Image Annotation is in the following directory:
+/home/reza/work/annotation_hoiem/hoiem_annot_tool
+
+- The annotation is done using the script
+- /home/reza/work/annotation_hoiem/hoiem_annot_tool/objectLabelingScript.m
+- After annotation the pixels are relabeled to have a same global labels for 86 (MS-COCO + Activision objects) using the script:
+- /home/reza/work/annotation_hoiem/hoiem_annot_tool/create_global_labels.
+
+Superpixel Generation:
+======================
+- source code for superpixel generation is in the following directory:
+/home/reza/work/rcnn-depth/eccv14-code/gmu_superpixel_code/
+- the superpixel generation is done using the following script:
+- /home/reza/work/rcnn-depth/eccv14-code/gmu_superpixel_code/generateSpxlScript.m
+
+(PS: the code is also setup in George's computer and most of the scenes were processed in his machine)
+
+
+Label Propagation:
+==================
+- source code for Label Propagation is in the following directory:
+/home/reza/work/label_props
+
+- the labels are propagated for a particular scene using the following script:
+- /home/reza/work/label_props/propagate_3dprojv7.m
+
+- prior to running the script (parameters) are separately created by another script
+/home/reza/work/label_props/preprocess_label_propagation_script.m
+
+the parameters are as follows:
+- labeled 'key-frames'
+- non-labeled key-frames
+- 3D point cloud per image
+- rotation+translation per image (comes from the global registration using Colmap software)
+
+It collects some of the scene-specific information from the mat file 'image_structs.mat'. Active-Vision dataset provides this
+for each scene.
+
+Notes by Yimeng
+Use scene 'Home_010_1' in ~/ActiveVisionDataset as an example
+To start Matlab, open terminal, go to matlab_2017
+change to root user
+$ matlab
+1. run create_global_labels.m in ~/work/annotation_hoiem/hoiem_annot_tool folder. Change variable 'start_num' if we find inconsistency in the labels.
+The script will generate another set of mat files saved in 'label_Home_010_1' folder in ~/ActiveVisionDataset/Home_010_1
+If you want to fix the labels, fix the 'objects' struct. And save it through 'save(inname, 'objects')' code.
+2. Copy the generated set of mat files to '~/work/label_props/VIDEO_name
+3. run the preprocess_label_propagation_script.m in work/label_props 5 times.
+At each time, finish one of the 5 tasks 'select_ALL_FRAME', 'SELECT_KEY_FRAME', 'GENERATE_XYZworld', 'VISUALIZE_XYZworld', 'PRUNE_KEY_FRAME'.
+
+When we run create_global_labels.m,
+1. add the room to label to directory list imdir, indir, outdir.
+2. change 'video_index', refers to the Home you are going to label.
+3. change 'startnum', refers to the image you start with. 
+
+objects.name{iobj} = 'nature_valley_sweet_and_salty_nut_almond';
+save(inname, 'objects');
