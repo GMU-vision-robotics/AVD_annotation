@@ -2,15 +2,15 @@
 % this script has been modified for Active Vision Dataset
 % Md Alimoor Reza, mreza@masonlive.gmu.edu, January 2018
 clear; clc;
-video_names         = {'Home_001_1', 'Home_005_1', 'Home_002_1', 'Home_003_1'};
-v_index             = 4;
+video_names         = {'Home_006_1', 'Home_004_1', 'Home_007_1', 'Home_010_1', 'Home_011_1', 'Home_016_1'};
+v_index             = 6;
 video_name          = video_names{v_index};
-src_dir             = '/home/reza/work/label_props/';
+src_dir             = '/home/yimeng/AVD_annotation-master/label_prop/';
 SELECT_ALL_FRAME    = 0;
 SELECT_KEY_FRAME    = 1;
 GENERATE_XYZworld   = 0;
 VISUALIZE_XYZworld  = 0;
-PRUNE_KEY_FRAME     = 0;
+PRUNE_KEY_FRAME     = 1;
 
 %CALIBRATED: fx,fy,cx,cy,k1,k2,p1,p2
 % 1070, 1069.126, 927.269, 545.76, 0.035321, .0025428, .002387, -.00241
@@ -83,7 +83,7 @@ end
 % keyboard;
 if (SELECT_KEY_FRAME)
     
-    files = dir(fullfile(src_dir, video_name, ['label_' video_name '/*.mat']));
+    files = dir(fullfile(src_dir, video_name, ['final_label/*.mat']));
     trainKeyframes = cell(length(files),1);        
     for iF=1:length(files)
         % frame name 
@@ -107,12 +107,14 @@ if (GENERATE_XYZworld)
     
     for iF=1:length(allframes)
         fileName = allframes{iF};
-
+        if strcmp(fileName, '0007100040301')
+            continue
+        end
         % load depth
         %depthFileName = [src_dir video_name '/depth_filled/' fileName '03.png']; % 03-Raw-depth
         depthFileName = [src_dir video_name '/high_res_depth/' fileName '03.png']; % 03-Raw-depth
         image = imread([src_dir video_name '/jpg_rgb/' fileName '01.jpg']); % 01-rgb image
-        depth = double(imread(depthFileName)); % convert into meters        
+        depth = double(imread(depthFileName)); % convert into meters
                 
         worldpcFileName = [src_dir video_name '/worldpc/' fileName '01.mat'];        
         fprintf('%d.%s frame worldpc file ', iF, fileName);

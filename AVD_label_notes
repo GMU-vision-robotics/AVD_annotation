@@ -46,7 +46,7 @@ $ matlab
 1. run create_global_labels.m in ~/work/annotation_hoiem/hoiem_annot_tool folder. Change variable 'start_num' if we find inconsistency in the labels.
 The script will generate another set of mat files saved in 'label_Home_010_1' folder in ~/ActiveVisionDataset/Home_010_1
 If you want to fix the labels, fix the 'objects' struct. And save it through 'save(inname, 'objects')' code.
-2. Copy the generated set of mat files to '~/work/label_props/VIDEO_name
+2. Copy the generated set of mat files to 'label_props/VIDEO_name
 3. run the preprocess_label_propagation_script.m in work/label_props 5 times.
 At each time, finish one of the 5 tasks 'select_ALL_FRAME', 'SELECT_KEY_FRAME', 'GENERATE_XYZworld', 'VISUALIZE_XYZworld', 'PRUNE_KEY_FRAME'.
 
@@ -54,6 +54,21 @@ When we run create_global_labels.m,
 1. add the room to label to directory list imdir, indir, outdir.
 2. change 'video_index', refers to the Home you are going to label.
 3. change 'startnum', refers to the image you start with. 
-
+4. To fix the mistakenly labeled object name, use the following two lines.
 objects.name{iobj} = 'nature_valley_sweet_and_salty_nut_almond';
 save(inname, 'objects');
+
+Before we run preprocess_label_propagation_script.m,
+1. put the avds_scene_folder, e.g. Home_006_01, under label_prop folder.
+2. make sure 'final_label', 'intrinsic.mat' and 'spM' is inside.
+3. Then run the 5 steps in preprocess.m script. We can the 4th step visualization.
+ don't forget to change the video_name and v_index to refer to the scene you are processing.
+4. video 007, image 0007100040301 has undecoded depth image.
+ 
+ propagate_3dprojv7('Home_006_1', 1, 2412)
+ propagate_3dprojv7('Home_004_1', 1, 1488)
+ propagate_3dprojv7('Home_007_1', 1, 402)
+ propagate_3dprojv7('Home_007_1', 404, 1728)
+ propagate_3dprojv7('Home_010_1', 1, 1320)
+ propagate_3dprojv7('Home_011_1', 1, 1548)
+ propagate_3dprojv7('Home_016_1', 1, 1128)

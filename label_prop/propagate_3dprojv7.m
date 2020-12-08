@@ -1,4 +1,4 @@
-function propagate_3dprojv7(start, finish)
+function propagate_3dprojv7(video_name, start, finish)
 % This script is for the label propagation % It does the visibility 
 % reasoning. As for occlusion reasoning, it accumulates the 3D labeled point 
 % cloud from a window of W annotated frames around the frame under consideration. 
@@ -8,17 +8,15 @@ function propagate_3dprojv7(start, finish)
 
 
 close all;
-
+addpath(genpath('./gc_segmentation/'));
 %**************************************************************************
-% video_name      = 'hotel_umd40';
-% video_name      = 'studyroom';
-% video_name      = 'hv_c6';
-% video_name      = 'mit_32';
+
 if (~exist('video_name', 'var'))
-    %video_name        = 'Home_001_1';
-    %video_name        = 'Home_005_1';
-    %video_name        = 'Home_002_1';
-    video_name        = 'Home_003_1';
+    v_index             = 1;
+    video_names         = {'Home_006_1', 'Home_004_1', 'Home_007_1', 'Home_010_1', 'Home_011_1', 'Home_016_1'};
+    video_name          = video_names{v_index};
+    
+    
 end
 
 rgbExtension         = '01';
@@ -103,7 +101,7 @@ objectNameToWeightMap(objectNameToNumberMap('paper_plate'))                     
 % 
 
 
-src_dir         = '/home/reza/work/label_props/';
+src_dir         = '/home/yimeng/AVD_annotation-master/label_prop/';
 %the dir. where store the rgb and depth file
 img_dir         = [src_dir video_name '/jpg_rgb/'];
 depth_dir       = [src_dir video_name '/high_res_depth/'];
@@ -119,7 +117,7 @@ IS_SMOOTHNESS   = true;
 smoothness_cost = 0.5;
 
 % label_dir       = [src_dir video_name '/active_vision_labels/'];
-label_dir       = [src_dir video_name '/label_' video_name '/'];
+label_dir       = [src_dir video_name '/final_label/'];
 
 if (~IS_SMOOTHNESS)
     label_dir_pred  = [src_dir video_name '/label_pred_geom_only_' num2str(nLabel) '/'];
@@ -149,7 +147,7 @@ clear trainKeyframes;
 kfList                      = {keyframes{1:end}};
 windowLen                   = length(kfList);
 
-load(fullfile(src_dir, video_name, 'intrinsic.mat'));
+load(fullfile(src_dir, video_name, 'intrinsic.mat'), 'K');
 load(fullfile(src_dir, video_name, 'allframes-extrinsics.mat'), 'allframes', 'extrinsicsC2W', 'noRt'); % extrinsics from camera 2 world coordinates
 worldpc_dir     = fullfile(src_dir, video_name, 'worldpc');
 
@@ -182,7 +180,12 @@ end
 %start = 1104; % frame with occluded wall projected on couch
 %start = 5; % frame with occluded door projected on refrigerator
 
-%for nn = start:length(allFileNumbers)    
+%for nn = start:length(allFileNumbers)  
+if (~exist('start', 'var'))
+    start  = 1;
+    finish = length(allframes);
+end
+
 for nn = start:finish
 
     disp(['processing ' num2str(nn) '/' num2str(finish)]);
@@ -652,305 +655,11 @@ for nn = start:finish
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% FLOW-BASED INFO        
-%     if (0)
-%         %to store featurs for 'this' superpixels in cell
-%         segCur =  cell(spixelNumCur,1); 
-% 
-%         %initialize parameters of superpixels for the 'this' frame 
-%         %%in the form of cells 
-%         for i= 1:spixelNumCur
-% 
-%             %find the superpixel of index i
-%             seg = limCur==i;
-%             xSeg2d = xc(seg); ySeg2d = yc(seg); %x-coordinate %y-coordinate 
-% 
-%             %initialize the label to the default -1;not assigned
-%             segCur{i}.label = -1;
-% 
-%             xySegC = [xSeg2d ySeg2d];
-%             segCur{i}.seg = seg;
-%             segCur{i}.coor = xySegC;
-%             segCur{i}.size = (sum(seg(:)));%total number of pixels
-% 
-%             minX = min(xSeg2d(:)); minY = min(ySeg2d(:));
-%             %        minZ = min(zSeg2d(:));        
-%             maxX = max(xSeg2d(:)); maxY = max(ySeg2d(:));
-%             %        maxZ = max(zSeg2d(:));        
-%             w = maxX - minX; h = maxY - minY; %x, width %y, height 
-%             %        d = maxZ - minZ; %z        
-%             segCur{i}.whd = [w;h]; segCur{i}.XYmin = [minX minY ]; segCur{i}.XYmax = [maxX maxY ];               
-%             segCur{i}.RGB = [rgbCurR(seg) rgbCurG(seg) rgbCurB(seg)];
-%             segCur{i}.mean_centroid_2D= [mean(xSeg2d(:)) mean(ySeg2d(:))];
-% 
-%             %the index of the superpixel in the 5th frame 'after' this superpixel associated with
-%             segCur{i}.after =0;
-%             %the index of the superpixel in the 5th frame 'before' this superpixel associated with
-%             segCur{i}.before =0;
-% 
-%         end
-% 
-% 
-% 
-%         [xc, yc] = meshgrid(1:ncols, 1:nrows);
-% 
-%         %superpixel level labeling from pixel level
-%         labelpr = zeros(r,c);
-% 
-%         %to store featurs for 'this' superpixels in cell
-%         segPre =  cell(spixelNumPre,1); 
-% 
-%         %initialize parameters of superpixels for the 'previous' frame in the form of cells 
-%         for i= 1:spixelNumPre
-% 
-%             seg = limPre==i;
-%             xSeg2d = xc(seg);
-%             ySeg2d = yc(seg);
-%             %       zSeg2d = depthP(seg);
-% 
-%             xySegC = [xSeg2d ySeg2d];
-%             segPre{i}.seg = seg; segPre{i}.coor = xySegC; segPre{i}.size = (sum(seg(:)));
-% 
-%             %assign the LABEL of GT to each superpixel, GT label is pixel-wise
-%             labelSeg = labelP(seg);
-%             %suml =[sum(labelSeg==0); sum(labelSeg==1); sum(labelSeg==2); sum(labelSeg==3); sum(labelSeg==4)];
-%             suml = [];
-%             for ii=0:nLabel
-%                 suml =[suml; sum(labelSeg==ii)];
-%             end
-% 
-%             %choose the label which occupies the most in the superpixel
-%             label = find(suml==max(suml));
-% 
-%             %in case size(label,1)<=1
-%             if size(label,1)>1
-%                 label = max(label);
-%             end
-%             label = label-1;
-%             segPre{i}.label = label;
-% 
-%             %the annotation on superpixels
-%             labelpr(limPre==i) = segPre{i}.label;
-% 
-%             minX = min(xSeg2d(:)); minY = min(ySeg2d(:));
-%             %      minZ = min(zSeg2d(:));        
-%             maxX = max(xSeg2d(:)); maxY = max(ySeg2d(:));
-%             %       maxZ = max(zSeg2d(:));        
-%             w = maxX - minX; h = maxY - minY; %y %x        
-%             %       d = maxZ - minZ; %z
-% 
-%             segPre{i}.whd = [w;h]; segPre{i}.XYmin = [minX minY ]; segPre{i}.XYmax = [maxX maxY ];        
-%             segPre{i}.RGB = [rgbPreR(seg) rgbPreG(seg) rgbPreB(seg)];
-%             segPre{i}.mean_centroid_2D= [mean(xSeg2d(:)) mean(ySeg2d(:))];
-%             %the index of the superpixel in the 5th frame 'before' this superpixel associated with
-%             segPre{i}.before =0;
-%             %the index of the superpixel in the 5th frame 'after' this superpixel associated with
-%             segPre{i}.after =0;
-% 
-%         end
-%     
-%     end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     pwDataTermC = zeros(r,c,nLabel+1);
     pwDataTermT = zeros(r,c,nLabel+1);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% FLOW-BASED INFO    
-%     if (0)
-%         %find associated candidated superpixels
-%         for i = 1:spixelNumCur
-% 
-%             seg = limCur==i;
-% 
-%             if sum(seg(:))==1
-%                 continue;
-%             end
-% 
-%             %the u,v of the flow, u-Xderection, v-Yderection
-%             uf = f(:, :,1);
-%             vf = f(:, :,2);
-%             u = uf(seg);
-%             v = vf(seg);
-% 
-%             xySeg  = segCur{i}.coor ;
-%             xSeg2d = xySeg(:,1);
-%             ySeg2d = xySeg(:,2);
-% 
-% 
-%             %predicted coordinates
-%             %coordinate  x, y add optical flow u, v correspondingly
-%             segPredict = [xSeg2d+u, ySeg2d+v];
-% 
-% 
-% 
-%             %check the if the the predicted pixel positiones is across the
-%             %image boundary
-%             xnew = segPredict(:,1);
-%             ynew = segPredict(:,2);
-%             xnew(xnew>ncols)=ncols;
-%             xnew(xnew<1)=1;
-%             ynew(ynew>nrows)=nrows;
-%             ynew(ynew<1)=1;
-% 
-% 
-%             segPredict = [xnew ynew];
-%             %round the predicted coordinates, which is the form of float
-%             segPredictR = round(segPredict);
-%             %compute the coordinate index, i.e. transfer two dimension index to
-%             %one dimension index
-%             segPredictINdex = (segPredictR(:,1)-1)*r+segPredictR(:,2);
-%             %the predict mask
-%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%             maskPredit = zeros(r,c);        % initialize
-%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%             segPredictINdex = unique(segPredictINdex);
-%             maskPredit(segPredictINdex)=1;
-% 
-% 
-%             %get all the indexes of superpixels in the 'Previous' farmes which
-%             %are intersected(ovelapped) with the predicted area
-%             overlap = limPre(segPredictINdex);
-%             %the index of the intersected superpixels
-%             segindex = unique(overlap);
-% 
-%             %compute the IOU for all superpixels intersected 
-%             indnum = length(segindex); %the number of the intersected
-%             ratio = zeros(indnum,1);
-%             lbls = zeros(indnum,1);
-% 
-%             for m = 1:indnum
-%                 in = segindex(m);
-%                 %compute the IOU
-%                 %ratio(m)=sum(overlap(:)==in)/(sum(maskPredit(:)==1)+sum(limPre(:)==in)); % IT IS NOT IoU
-% 
-%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                 unionPxls = [find(maskPredit(:)==1); find(limPre==in)];
-%                 unionPxls = unique(unionPxls);
-%                 ratio(m)  = sum(overlap(:)==in)/length(unionPxls);                      
-%                 img_limPre = zeros(r,c);
-%                 img_limPre(find(limPre(:)==in)) = 1;
-%                 lbls(m) = unique(labelpr(find(img_limPre == 1)));           
-%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%            
-%     %             % compute the label of each overlapped superpixel
-%     %             overlap_mask = zeros(r,c);
-%     %             overlap_mask(segPredictINdex) = limPre(segPredictINdex); 
-%     %             img_overlap(find(overlap_mask==in)) = 1;        
-% 
-%             end
-% 
-%     % % %         %the maximal IoU
-%     % % %         rIOU = max(ratio);
-%     % % %         
-%     % % %         %the tatol num of pixels in the prediction
-%     % % %         lenPrdict = sum(maskPredit(:)==1);
-%     % % %         
-%     % % %         %find the candidate superpixels which is 
-%     % % %         %the superpixels in 'previous' frame with the highest IoU
-%     % % %         k = segindex(find(ratio==max(ratio)));%the choosen index(es)
-%     % % %         
-%     % % %         
-%     % % %         %the case the number of IOU candidates are >1, choose the one with
-%     % % %         %minial size difference among them
-%     % % %         if size(k,1)>1
-%     % % %             
-%     % % %             diffSize =  abs(lenPrdict - sum(limPre(:)==k(1)));
-%     % % %             ck = k(1);
-%     % % %             
-%     % % %             for j=2:size(k,1)
-%     % % %                 
-%     % % %                 diffs = abs(lenPrdict - sum(limPre(:)==k(j)));
-%     % % %                 
-%     % % %                 if diffs < diffSize
-%     % % %                     diffSize = diffs;
-%     % % %                     ck = k(j);
-%     % % %                 end
-%     % % %                 
-%     % % %             end
-%     % % %             k = ck; %the choosen index
-%     % % %         end
-% 
-% 
-% 
-%             %assign the predicted label to the current frame
-%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%             if segCur{i}.label == -1
-%                 pColorDist = zeros(nLabel+1,1);
-%                 pTextDist = zeros(nLabel+1,1);
-%                 for ii=0:nLabel
-% 
-%                     % for each label set the unary scores (over lap region can intersect with many superpixels with the same label. pick the most similar one)
-%                     idx = find(lbls == ii);
-%                     cScores = zeros(length(idx),1);
-%                     distColors = zeros(length(idx),1);
-%                     ratioMdistColor = zeros(length(idx),1);
-%                     distTexts = zeros(length(idx),1);
-%                     ratioMdistText = zeros(length(idx),1);
-%                     for jj=1:length(idx)
-%                         cRatio  = ratio(idx(jj));
-%                         cLabel  = lbls(idx(jj));
-%                         cSpxl   = segindex(idx(jj));
-% 
-%                         colHistC = chCur(i,:);
-%                         colHistPre = chPre(cSpxl,:);
-%                         %compute the chi-square distance of histograms
-%                         distColor = pdist_2( colHistC, colHistPre, 'chisq');
-%                         distColors(jj) = exp(-distColor);                       %the bigger this value is, the more similiar 
-%                         ratioMdistColor(jj) = distColors(jj)*cRatio;
-% 
-% 
-%                         textHistC = ttCur(i,:);
-%                         textHistPre = ttPre(cSpxl,:);
-%                         %compute the chi-square distance of histograms
-%                         distText = pdist_2( textHistC, textHistPre, 'chisq');
-%                         distTexts(jj) = exp(-distText);                    
-%                         ratioMdistText(jj) = distTexts(jj)*cRatio;
-%                     end
-% 
-% 
-%                     if (~isempty(ratioMdistColor) || ~isempty(ratioMdistText))
-%                         pColorDist(ii+1) = -max(ratioMdistColor)-1; % take the maximum value
-%                         pTextDist(ii+1)  = -max(ratioMdistText)-1;
-%                     else
-%     %                     pColorDist(ii+1) = 1; % large number for label not present
-%     %                     pTextDist(ii+1) = 1; % large number for label not present
-%                     end
-% 
-%                 end
-% 
-%                 segCur{i}.pColorDist = pColorDist;            
-%                 segCur{i}.pTextDist = pTextDist;    
-% 
-%                 % fill in the pixels within the superpixel same score as data term for later CRF stage
-%                 for ii=0:nLabel
-%                     % color unary scores per pixel
-%                     curPwDataTermC = pwDataTermC(:,:,ii+1);
-%                     curPwDataTermC(seg) = pColorDist(ii+1);
-%                     pwDataTermC(:,:,ii+1) = curPwDataTermC;
-% 
-%                     % texture unary scores per pixel
-%                     curPwDataTermT = pwDataTermT(:,:,ii+1);
-%                     curPwDataTermT(seg) = pTextDist(ii+1);
-%                     pwDataTermT(:,:,ii+1) = curPwDataTermT;
-% 
-%                 end
-%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
-%             end
-% 
-% 
-%         end
-%     
-%     end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-    % prepare the pixel-wise unary potential for the inference
-        
-%     if (~exist(save_dir_unary, 'dir'))
-%         mkdir(save_dir_unary);
-%     end
+
     
     if (vis)        
         figure; imagesc(pwDataTermG(:,:,1))
