@@ -61,14 +61,47 @@ save(inname, 'objects');
 Before we run preprocess_label_propagation_script.m,
 1. put the avds_scene_folder, e.g. Home_006_01, under label_prop folder.
 2. make sure 'final_label', 'intrinsic.mat' and 'spM' is inside.
-3. Then run the 5 steps in preprocess.m script. We can the 4th step visualization.
+3. Then run the 5 steps in preprocess.m script. We can skip the 4th step visualization.
  don't forget to change the video_name and v_index to refer to the scene you are processing.
 4. video 007, image 0007100040301 has undecoded depth image.
+Some images don't have label propagation results because their [R | T] matrix is missing from AVD dataset.
  
  propagate_3dprojv7('Home_006_1', 1, 2412)
  propagate_3dprojv7('Home_004_1', 1, 1488)
  propagate_3dprojv7('Home_007_1', 1, 402)
  propagate_3dprojv7('Home_007_1', 404, 1728)
+ 
+ 0006100174901
+ 0007100134601
+ 0004100122001
+ propagate_3dprojv7('Home_004_1', 1220, 1488)
+ image 0001 and 1220 result is missing from the folder Home_004_1
+ 
+ propagate_3dprojv7('Home_006_1', 2351, 2412)
+ 
+ propagate_3dprojv7('Home_007_1', 1345, 1728)
+ 
  propagate_3dprojv7('Home_010_1', 1, 1320)
  propagate_3dprojv7('Home_011_1', 1, 1548)
  propagate_3dprojv7('Home_016_1', 1, 1128)
+ 
+ propagate_3dprojv7('Home_010_1', 1, 500)
+ propagate_3dprojv7('Home_010_1', 500, 1000)
+ propagate_3dprojv7('Home_010_1', 1000, 1320)
+ propagate_3dprojv7('Home_010_1', 1202, 1320)
+ 
+ propagate_3dprojv7('Home_011_1', 1, 500)
+ propagate_3dprojv7('Home_011_1', 500, 1000)
+ propagate_3dprojv7('Home_011_1', 1000, 1548)
+ propagate_3dprojv7('Home_011_1', 1155, 1548)
+ propagate_3dprojv7('Home_011_1', 691, 1000)
+ 
+ propagate_3dprojv7('Home_016_1', 1, 500)
+ propagate_3dprojv7('Home_016_1', 500, 850)
+ propagate_3dprojv7('Home_016_1', 850, 1128)
+ 
+  propagate_3dprojv7('Home_016_1', 1012, 1128)
+  
+  
+5. Visualize the label propagation results through visPropLabelsv2.m.
+First label_props/demo_output.py to generate index.html for each scene.

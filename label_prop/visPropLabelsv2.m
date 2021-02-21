@@ -100,9 +100,11 @@ colors =    [ 0.6 0.0 0.0;            % 0)
 % video_names = {'studyroom'};
 %video_names = {'mit_32'};
 %video_names = {'hv_c5'};
-video_names   = {'Home_001_1', 'Home_005_1', 'Home_002_1', 'Home_003_1'};
+%video_names   = {'Home_001_1', 'Home_005_1', 'Home_002_1', 'Home_003_1', 'Home_004_1',};
+video_names   = { 'Home_006_1', 'Home_007_1', ...
+    'Home_010_1', 'Home_011_1', 'Home_016_1'};
 
-srcDir = '/home/reza/work/label_props/';
+srcDir = '/home/yimeng/AVD_annotation-master/label_prop/';
 rgbExtension         = '01';
 depthExtension       = '03';
 superpixelExtension  = '03';
@@ -120,7 +122,8 @@ start_cx = 160; finish_cx = 1660;
 %figure_path = 'figure';
 
 
-for iVideo=4:length(video_names)
+
+for iVideo=1:length(video_names)
     
     video_name = video_names{iVideo};    
 
@@ -129,7 +132,8 @@ for iVideo=4:length(video_names)
     end
 
     if (~exist('gtDirName', 'var'))
-        gtDirName = sprintf('label_%s',video_name);
+        %gtDirName = sprintf('label_%s',video_name);
+        gtDirName = 'final_label';
     end
 
     if (~exist('rgbDirName', 'var'))
@@ -142,6 +146,7 @@ for iVideo=4:length(video_names)
     load([srcDir video_name '/allframes-extrinsics.mat'], 'allframes', 'noRt');
     load([srcDir video_name '/allKeyframes.mat'], 'trainKeyframes');
 
+    f1 = fopen([srcDir '/' video_name '/input.txt' ], 'w');
     if (IS_CROPPED)
         if (~exist([predPath '/figure_cropped'], 'dir'))
             mkdir([predPath '/figure_cropped']);
@@ -155,7 +160,7 @@ for iVideo=4:length(video_names)
         
     end
     
-    for iFrames=1329:length(allframes)
+    for iFrames=1:length(allframes)
         
         curFrame = allframes{iFrames};
         fprintf('%d). processing %s \n', iFrames, curFrame);
@@ -187,6 +192,8 @@ for iVideo=4:length(video_names)
            fprintf('%s exists\n',fullfile(predPath, figure_path, [curFrame outname])) 
            continue;
         end
+        
+        fprintf(f1, '%s\n', [curFrame outname]);
 
         % manual inspection of the labels
         %%
@@ -248,6 +255,7 @@ for iVideo=4:length(video_names)
         end
         
     end
+    fclose(f1);
     
 end
 
