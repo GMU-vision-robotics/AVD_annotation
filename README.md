@@ -9,13 +9,13 @@
 | HOME_006_1  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
 | HOME_007_1  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
 | HOME_008_1  | 
-| HOME_010_1  | :heavy_check_mark: | :heavy_check_mark: | Ongoing
-| HOME_011_1  | :heavy_check_mark: | :heavy_check_mark: | Ongoing
+| HOME_010_1  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
+| HOME_011_1  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
 | HOME_013_1  | 
 | HOME_014_1  | 
 | HOME_014_2  |
 | HOME_015_1  | 
-| HOME_016_1  | :heavy_check_mark: | :heavy_check_mark: | Ongoing
+| HOME_016_1  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
 
 ## Annotation Pipeline Guide
 **Hand Label Clean Up**
