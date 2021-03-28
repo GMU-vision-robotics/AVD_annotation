@@ -1,4 +1,8 @@
 # AVD_annotation
+![Home_004_1](https://github.com/GMU-vision-robotics/AVD_annotation/blob/main/Home_004_1/selected_images/000410000020101.jpg)
+![Home_004_1 anno](https://github.com/GMU-vision-robotics/AVD_annotation/blob/main/Home_004_1/vis_anno/000410000020101_anno.jpg)
+[More visualizations](https://github.com/GMU-vision-robotics/AVD_annotation/tree/main/temp_github.html)
+
 | AVD_scenes | Hand Label | Point Cloud Generation | Label Propagation |
 |--|--|--|--|
 | HOME_001_1  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark:
