@@ -8,6 +8,8 @@ scenes = ['Home_004_1', 'Home_006_1', 'Home_010_1', 'Home_011_1', 'Home_016_1']
 
 
 f = open('temp_github.html', 'w')
+f.write('<!DOCTYPE html>\n')
+f.write('<html>\n')
 
 for scene in scenes:
 	img_folder = '{}/selected_images'.format(scene)
@@ -16,9 +18,10 @@ for scene in scenes:
 
 	for img_file in img_files:
 		img_id = img_file[:-4]
-		f.write('<h5>{}/selected_images/{}_.jpg</h5>'.format(scene, img_id))
-		f.write('<img src=\"https://github.com/GMU-vision-robotics/AVD_annotation/blob/main/{}/{}.jpg\" width=\"512px\" style=\"margin: 0px 10px\" />'.format(img_folder, img_id))
-		f.write('<img src=\"https://github.com/GMU-vision-robotics/AVD_annotation/blob/main/{}/{}_anno.jpg\" width=\"512px\" style=\"margin: 0px 10px\" />'.format(label_folder, img_id))
-		f.write('</br>')
+		f.write('<h5>{}/selected_images/{}_.jpg</h5>\n'.format(scene, img_id))
+		f.write('<img src=\"https://github.com/GMU-vision-robotics/AVD_annotation/blob/main/{}/{}.jpg\" width=\"512px\" style=\"margin: 0px 10px\" />\n'.format(img_folder, img_id))
+		f.write('<img src=\"https://github.com/GMU-vision-robotics/AVD_annotation/blob/main/{}/{}_anno.jpg\" width=\"512px\" style=\"margin: 0px 10px\" />\n'.format(label_folder, img_id))
+		f.write('</br>\n')
 
+f.write('</html>\n')
 f.close()
