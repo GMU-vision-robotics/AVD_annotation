@@ -117,7 +117,7 @@ superpixelFileType  = '.mat';
 labelFileType       = '.mat';
 worldpclFileType    = '.mat';
 
-IS_CROPPED = 1;
+IS_CROPPED = 0;
 start_cx = 160; finish_cx = 1660;
 %figure_path = 'figure';
 
